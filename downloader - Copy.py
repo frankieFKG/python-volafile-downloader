@@ -136,14 +136,20 @@ class VolaDL(object):
         file_list = self.listen.files
         for f in file_list:
             url = f.url
+            
             uploader = f.uploader
             file_size = '{0:.4f}'.format(f.size / 1048576)
-            print('### NEXT FILE:')
+            print('### NEXT FILE: ' + f.name )
             print('URL : {} - UPLOADER: {} - FILESIZE: {} MB'.format(url, uploader, file_size))
             if not self.max_file_size == -1 and f.size / 1048576 >= self.max_file_size:
                 print('File is too big to download.')
             elif self.file_check(f):
-                self.single_file_download(url, uploader)
+                self.savedSize = f.size
+                if ( str.startswith(f.name, '[REQUEST]')):   self.single_file_download(url, 'requests' )
+                elif ( str.startswith(f.name, '[request]')): self.single_file_download(url, 'requests' )
+                elif ( str.startswith(f.name, '[REQ]')):     self.single_file_download(url, 'requests' )
+                elif ( str.startswith(f.name, '[req]')):     self.single_file_download(url, 'requests' )
+                else: self.single_file_download(url, '')
             else:
                 print('File got filtered out.')
         print('### ### ###')
@@ -171,21 +177,36 @@ class VolaDL(object):
 
     def single_file_download(self, url, upl):
         """Prepares a single file from vola for download"""
-        if os.path.exists(self.download_path + '/' + upl):
-            temp_path = self.download_path + '/' + upl + '/'
-        else:
-            temp_path = VolaDL.create_folder(self.download_path + '/' + upl)
-
+        
+        if ( upl ): 
+            print( "dealing with a " + upl );
+            if os.path.exists(self.download_path + '/' + upl):
+                temp_path = self.download_path + '/' + upl + '/'
+            else:
+                temp_path = VolaDL.create_folder(self.download_path + '/' + upl)
+        else: 
+            if os.path.exists(self.download_path ): #+ '/' + upl):
+                temp_path = self.download_path + '/' #+ upl + '/'
+            else:
+                temp_path = VolaDL.create_folder(self.download_path )#+ '/' + upl)
+        
         url_split = url.split('/')
         file_split = str(url_split[-1]).split('.')
         file_split_length = len(file_split[-1]) + 1
         download_path = temp_path + str(url_split[-1][0:-file_split_length]) + '.' + str(file_split[-1])
 
-        if self.duplicate and os.path.isfile(download_path):
-            print("File exists already!")
-            return False
-        elif os.path.isfile(download_path):
-            download_path = temp_path + str(file_split[0]) + "-" + VolaDL.id_generator() + '.' + str(file_split[-1])
+        
+        if os.path.isfile(download_path):
+            local = os.path.getsize(download_path)
+            online = self.savedSize
+            print (str(local) + " vs " + str(online))
+            if local == online:
+                print("File exists already!")
+                return False
+            else:
+                print("Found Diff File Size!")
+                return False;
+                #download_path = temp_path + str(file_split[0]) + "-" + VolaDL.id_generator() + '.' + str(file_split[-1])
         print('[{}] Downloading to: {}'.format(self.counter, download_path))
         self.counter += 1
         return self.download_file(url, download_path)

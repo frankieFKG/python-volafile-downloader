@@ -16,7 +16,7 @@ CONTINUE_RUNNING = True
 # When this is True files from the same user with the same filename get downloaded with an altered
 # filename -> True/False
 # Does not apply to the room entering downloads, there no duplicates will be stored
-ALLOW_DUPLICATES = True
+ALLOW_DUPLICATES = False
 
 # Volafile user for downloading. Useful if you have volafile pro for a higher speed.
 VOLAFILE_USER = ''
