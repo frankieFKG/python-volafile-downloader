@@ -17,8 +17,11 @@ class VolaDL(object):
         """Initialize Object"""
         self.headers = config.HEADERS
         self.cookies = config.COOKIES
-        self.room = args[0]
         self.password = args[1]
+        if args[0] is None:
+            self.room = "castleofcarse"
+        else:
+            self.room = args[0]
         if args[2] is None:
             self.downloader = config.DOWNLOADER
         else:
@@ -35,7 +38,7 @@ class VolaDL(object):
         self.continue_running = config.CONTINUE_RUNNING
         self.max_file_size = config.MAXIMUM_FILE_SIZE
 
-        self.download_path = config.DOWNLOAD_PATH + self.room
+        self.download_path = config.DOWNLOAD_PATH + "castleofcarse"#self.room
         self.log_path = config.LOG_PATH + self.room
         self.refresh_time = datetime.now() + timedelta(days=1)
         self.counter = 1
@@ -64,7 +67,7 @@ class VolaDL(object):
             file_size = '{0:.4f}'.format(f.size / 1048576)
             print('### NEW FILE - URL : {} - UPLOADER: {} - FILESIZE: {} MB'.format(url, uploader, file_size))
             if not self.max_file_size == -1 and f.size / 1048576 >= self.max_file_size:
-                print('    Skipping because file is too big to download......................................................')
+                print('File is too big to download.')
             elif self.file_check(f):
                 self.single_file_download(url, uploader)
             else:
@@ -134,38 +137,35 @@ class VolaDL(object):
         """Download the whole room on enter"""
         time.sleep(2)
         file_list = self.listen.files
-        fileCount = -1
+        fileCount = 0
         for f in file_list:
             url = f.url
-            fileCount = fileCount + 1
+            
             uploader = f.uploader
             file_size = '{0:.4f}'.format(f.size / 1048576)
-            
-            print('### NEXT FILE #' + str(fileCount) + ': ' + f.name )
+            print('### NEXT FILE #' + fileCount + ': ' + f.name )
             print('    UPLOADER: {}'.format(uploader))
             print('    FILESIZE: {} MB'.format(file_size))
-            
+            #print('    URL : {} - UPLOADER: {} - FILESIZE: {} MB'.format(url, uploader, file_size))
             if not self.max_file_size == -1 and f.size / 1048576 >= self.max_file_size:
                 print(' !! ERR: File is too big to download.')
             elif self.file_check(f):
                 self.savedSize = f.size
-                if ( str.startswith(f.name, 'REQUEST')):     self.single_file_download(url, 'requests' )
-                
-                elif ( str.startswith(f.name, '[REQUEST]')): self.single_file_download(url, 'requests' )
+                if ( str.startswith(f.name, '[REQUEST]')):   self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '[Request]')): self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '[request]')): self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '[REQ]')):     self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '[Req]')):     self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '[req]')):     self.single_file_download(url, 'requests' )
 
-                elif ( str.startswith(f.name, '(REQUEST)')): self.single_file_download(url, 'requests' )
+                elif ( str.startswith(f.name, '(REQUEST)')):   self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '(Request)')): self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '(request)')): self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '(REQ)')):     self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '(Req)')):     self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '(req)')):     self.single_file_download(url, 'requests' )
                 
-                elif ( str.startswith(f.name, '{REQUEST}')): self.single_file_download(url, 'requests' )
+                elif ( str.startswith(f.name, '{REQUEST}')):   self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '{Request}')): self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '{request}')): self.single_file_download(url, 'requests' )
                 elif ( str.startswith(f.name, '{REQ}')):     self.single_file_download(url, 'requests' )
@@ -426,7 +426,7 @@ def parse_args():
         description="volafile downloader",
         epilog="Pretty meh"
     )
-    parser.add_argument('--room', '-r', dest='room', type=str, required=True,
+    parser.add_argument('--room', '-r', dest='room', type=str, #required=True,
                         help='Room name, as in https://volafile.org/r/ROOMNAME')
     parser.add_argument('--passwd', '-p', dest='passwd', type=str,
                         default="*",
