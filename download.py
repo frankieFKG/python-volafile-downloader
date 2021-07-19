@@ -65,6 +65,10 @@ class VolaDL(object):
             print('### NEW FILE - URL : {} - UPLOADER: {} - FILESIZE: {} MB'.format(url, uploader, file_size))
             if not self.max_file_size == -1 and f.size / 1048576 >= self.max_file_size:
                 print('    Skipping because file is too big to download......................................................')
+                print('    Skipping because file is too big to download......................................................')
+                print('    Skipping because file is too big to download......................................................')
+                print('    Skipping because file is too big to download......................................................')
+                print('    Skipping because file is too big to download......................................................')
             elif self.file_check(f):
                 self.single_file_download(url, uploader)
             else:
@@ -138,6 +142,7 @@ class VolaDL(object):
         for f in file_list:
             url = f.url
             fileCount = fileCount + 1
+            
             uploader = f.uploader
             file_size = '{0:.4f}'.format(f.size / 1048576)
             
